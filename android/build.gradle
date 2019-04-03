@@ -8,8 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
-        compile "io.scanbot:sdk-package-1:1.39.1"
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
@@ -17,6 +16,7 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
 
         maven {
             url 'https://nexus.scanbot.io/nexus/content/repositories/releases/'
@@ -31,16 +31,21 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
-        ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86"
-        }
+        targetSdkVersion 27
     }
     lintOptions {
         disable 'InvalidPackage'
     }
+    productFlavors {
+    }
+}
+
+dependencies {
+    implementation 'io.scanbot:sdk-package-1:1.39.1'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:support-v4:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
 }
