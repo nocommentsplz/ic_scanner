@@ -96,14 +96,14 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
             }
         });
 
-        baseView.findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
-        });
+//        baseView.findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                flashEnabled = !flashEnabled;
+//                cameraView.useFlash(flashEnabled);
+//            }
+//        });
 
         return baseView;
     }
@@ -158,41 +158,20 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         resultView.post(new Runnable() {
             @Override
             public void run() {
-
-                String path;
-
-                PackageManager packageManager = IcScannerPlugin.application.getPackageManager();
-                String packageName = IcScannerPlugin.application.getPackageName();
-                try {
-                    PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-                    path = packageInfo.applicationInfo.dataDir;
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                    handleError();
-                    return;
-                }
-
-                File file = new File(path/*IcScannerPlugin.application.getDataDir()*/, "IC_SCAN_" + (counter++) + ".png"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
-
-                try (FileOutputStream out = new FileOutputStream(file)) {
-                    documentImage.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is y
-                    out.flush();
-                    // PNG is a lossless format, the compression factor (100) is ignored
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    handleError();
-                    return;
-                }
-
-                if (null != activity) {
-                    Intent intent = new Intent();
-                    intent.putExtra("FILEPATH", file.getAbsolutePath());
-                    activity.setResult(RESULT_OK, intent);
-                    activity.finish();//finishing activity
+                File file = saveImage(documentImage);
+                if (null != file) {
+                    if (null != activity) {
+                        Intent intent = new Intent();
+                        intent.putExtra("FILEPATH", file.getAbsolutePath());
+                        activity.setResult(RESULT_OK, intent);
+                        activity.finish();//finishing activity
+                    } else {
+                        resultView.setImageBitmap(documentImage);
+                        cameraView.continuousFocus();
+                        cameraView.startPreview();
+                    }
                 } else {
-                    resultView.setImageBitmap(documentImage);
-                    cameraView.continuousFocus();
-                    cameraView.startPreview();
+                    handleError();
                 }
             }
         });
@@ -205,6 +184,33 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
             activity.setResult(RESULT_CANCELED, intent);
             activity.finish();//finishing activity
         }
+    }
+
+    private File saveImage(Bitmap documentImage) {
+        String path;
+
+        PackageManager packageManager = IcScannerPlugin.application.getPackageManager();
+        String packageName = IcScannerPlugin.application.getPackageName();
+        try {
+            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
+            path = packageInfo.applicationInfo.dataDir;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        File file = new File(path/*IcScannerPlugin.application.getDataDir()*/, "IC_SCAN_" + (counter++) + ".png"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
+
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            documentImage.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is y
+            out.flush();
+            // PNG is a lossless format, the compression factor (100) is ignored
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return file;
     }
 }
 

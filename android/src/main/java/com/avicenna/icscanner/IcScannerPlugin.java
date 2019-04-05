@@ -72,14 +72,6 @@ public class IcScannerPlugin implements MethodCallHandler, ActivityResultListene
     }
 
     private void scanIC(MethodCall call, Result result) {
-        // Field[] fields = MainActivity.class.getDeclaredFields();
-        // HashMap<String, Object> details = new HashMap<>();
-        // for (Field f : fields) {
-        // if (call.argument(f.getName()) != null) {
-        // details.put(f.getName(), call.argument(f.getName()));
-        // }
-        // }
-
         this.flutterResult = result;
 
         if (null != activity) {
@@ -90,17 +82,17 @@ public class IcScannerPlugin implements MethodCallHandler, ActivityResultListene
                 this.flutterResult.error("Error", "Unable to snap image", e);
             }
         }
-
-        // flutterResult.success("Result from camera");
     }
 
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SCAN_IC_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            String filePath = data.getStringExtra("FILEPATH");
-            this.flutterResult.success(filePath);
-        } else {
-            this.flutterResult.success("abcd");
+        if (requestCode == SCAN_IC_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                String filePath = data.getStringExtra("FILEPATH");
+                this.flutterResult.success(filePath);
+            } else {
+                this.flutterResult.error("Error", "Unable to snap image", null);
+            }
         }
         return true;
     }
