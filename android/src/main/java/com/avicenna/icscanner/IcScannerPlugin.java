@@ -26,7 +26,7 @@ public class IcScannerPlugin implements MethodCallHandler, ActivityResultListene
      */
 
     private Result flutterResult = null;
-    public static int SCAN_IC_REQUEST_CODE = 1;
+    public static int SCAN_IC_REQUEST_CODE = 1111;
     public static Application application;
     private Activity activity = null;
 
@@ -89,11 +89,14 @@ public class IcScannerPlugin implements MethodCallHandler, ActivityResultListene
         if (requestCode == SCAN_IC_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 String filePath = data.getStringExtra("FILEPATH");
+                boolean from_ic_scanner = data.getBooleanExtra("from_ic_scanner", false);
+                if (!from_ic_scanner) return false;
                 this.flutterResult.success(filePath);
             } else {
                 this.flutterResult.error("Error", "Unable to snap image", null);
             }
+            return true;
         }
-        return true;
+        return false;
     }
 }

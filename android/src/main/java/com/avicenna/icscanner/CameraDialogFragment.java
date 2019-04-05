@@ -163,6 +163,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
                     if (null != activity) {
                         Intent intent = new Intent();
                         intent.putExtra("FILEPATH", file.getAbsolutePath());
+                        intent.putExtra("from_ic_scanner", true);
                         activity.setResult(RESULT_OK, intent);
                         activity.finish();//finishing activity
                     } else {
