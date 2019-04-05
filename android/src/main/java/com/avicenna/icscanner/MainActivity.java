@@ -13,7 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int PERMISSIONS_REQUEST_CAMERA = 314;
+    private static final int PERMISSIONS_REQUEST_CAMERA = 3140;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
